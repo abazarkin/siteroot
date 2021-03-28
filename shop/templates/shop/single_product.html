@@ -1,0 +1,97 @@
+{%extends 'shop/base.html'%}
+
+{% block content %}
+        <!--<a href="stock.html" class="back-button">Назад к каталогу</a>-->
+        <div class="layout-positioner">
+            <div class="anothernavi-container">
+                <a href="{% url 'index' %}">Главная</a>
+                <span>&nbsp; &gt; &nbsp;</span>
+                <a href="{% url 'catalogue' %}">Каталог</a>
+                <span>&nbsp; &gt; &nbsp;</span>
+                <a class="inactive">Футболка красная</a>
+            </div>
+            <div class="product-container">
+                <div class="clearfix">                    
+                        <img src="img/item1.png" class="product-image" alt="товар" height="300" width="300" title="{{ product.title }}">
+                    <p class= "product-name">{{ product.title }}</p>
+                </div>
+                <span class="product-info "><b>Информация о товаре:</b>
+                    <ul>
+                        <li>Подходит под все</li>
+                        <li>Круглый вырез</li>
+                        <li>Рукава узкого кроя</li>
+                        <li>Облегающий крой</li>
+                        <li>Унисекс</li>
+                    </ul>
+                    <b>Материалы:</b> 97% хлопок, 3% эластан.
+                    <br>
+                    <br>
+                    <label for="razmer">Выберите размер:</label>
+                    <select name="size" id="razmer">
+                        <option value="xs">XS</option>
+                        <option value="s">S</option>
+                        <option value="m">M</option>
+                        <option value="l">L</option>
+                        <option value="xl">XL</option>
+                        <option value="xxl">XXL</option>
+                    </select>
+                    <form>
+                        <input type="button" value="Подобрать размер" onClick="sizes()">
+                    </form>
+                </span>            
+                <a href="{% url 'add_to_cart' product_id=product.id %}" class="buy-button">Купить<br><b>{{ product.price }}</b></a>
+            </div>
+
+            <div class="comment-container">
+                <div class="comment-header">Отзывы</div>
+                {% if user.is_authenticated %}
+                <div class="comment_textarea">
+                    <form action="{% url 'product_by_id' product.id %}" method="POST">
+                        {% csrf_token %}
+                        <textarea name="text", maxlength="4096", rows="10", cols="97", placeholder="Ваш отзыв"></textarea>
+                        {% if text_error %}
+                            <p style="color:red;">{{ text_error }}</p>
+                        {% endif %}
+
+                        <div class="submit-review-container">
+
+                            Оценка:
+                            <select name="rating">
+                                <option value="0"></option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+
+                            </select>
+                            /5
+                            {% if rating_error %}
+                                <p style="color:red;">{{ rating_error }}</p>
+                            {% endif %}
+                            <input type="submit" value="Оставить отзыв"/>
+                        </div>
+                    </form>
+                </div>
+                
+				{% block comerr %}{% endblock %}
+
+                {% else %}
+
+                <p class="please-login"><a href="{% url 'login' %}">Войдите</a> в систему, чтобы оставить отзыв</p>
+
+                {% endif %}
+                {% for review in reviews %}
+
+                <div class="comment-block">
+                    <span class="name">{{ review.author }}</span>
+                    <span class="text">{{ review.review_text }}</span>
+                    <div class="rating">{{ review.rating }}/5</div>
+                    <span class="created_at">{{ review.created_at }}</span>
+                </div>
+
+                {% endfor %}
+
+            </div>
+        </div>
+{% endblock %}
